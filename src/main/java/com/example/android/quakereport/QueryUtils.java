@@ -1,5 +1,8 @@
 package com.example.android.quakereport;
 
+import android.annotation.TargetApi;
+import android.icu.text.SimpleDateFormat;
+import android.os.Build;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -7,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Helper methods related to requesting and receiving earthquake data from USGS.
@@ -34,6 +38,7 @@ public final class QueryUtils {
     }
 
 
+    @TargetApi(Build.VERSION_CODES.N)
     public static ArrayList<EarthquakeDetail> extractEarthquakes() {
 
         // Create an empty ArrayList that we can start adding earthquakes to
@@ -50,12 +55,19 @@ public final class QueryUtils {
             {
                 JSONObject currentEarthquake = earthquakeArray.getJSONObject(i);
                 JSONObject properties = currentEarthquake.getJSONObject("properties");
-                String mag = properties.getString("mag");
+                double mag = properties.getDouble("mag");
                 String location = properties.getString("place");
-                String time = properties.getString("time");
+                long time = properties.getLong("time");
+                String url = properties.getString("url");
 
-                EarthquakeDetail earthquakeDetail = new EarthquakeDetail(mag,location,time);
+                Date dateObject = new Date(time);
+                EarthquakeDetail earthquakeDetail = new EarthquakeDetail(mag,location,time,url);
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM DD, yyyy");
+                String dateToDisplay = dateFormatter.format(dateObject);
+
                 earthquakes.add(earthquakeDetail);
+
+
             }
 
         } catch (JSONException e) {
