@@ -1,2 +1,2 @@
 # Earthquake-Report
-Android Studio - Networking -JSON PARSING
+Android Studio - Networking
